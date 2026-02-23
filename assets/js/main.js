@@ -5,7 +5,8 @@ const category = document.getElementById("category")
 
 // Seleciona os elementos da lista.
 const expenseList = document.querySelector("ul")
-const expenseQuantity = document.querySelector("aside header p span")
+const expensesQuantity = document.querySelector("aside header p span")
+const expensesTotal = document.querySelector("aside header h2")
 
 // Captura o evento de input para formatação de valor.
 amount.oninput = () => {
@@ -41,7 +42,7 @@ form.onsubmit = (event) => {
         expense: expense.value,
         category_id: category.value,
         category_name: category.options[category.selectedIndex].text,
-        amount: amount.value,
+        amount: Number(amount.value.replace(/\D/g, "")) / 100,
         created_at: new Date(),
     }
     // Chama a função que irá adicionar o ítem na lista.
@@ -78,7 +79,8 @@ function expenseAdd(newExpense) {
         // Cria o valor da despesa.
         const expenseAmount = document.createElement("span")
         expenseAmount.classList.add("expense-amount")
-        expenseAmount.innerHTML = `<small>R$</small>${newExpense.amount.toUpperCase().replace("R$", "")}`
+        expenseAmount.innerHTML =
+            `<small>R$</small>&nbsp;${formatCurrencyBRL(newExpense.amount).replace("R$", "")}`
 
         // Cria um icone de remover.
         const removeIcon = document.createElement("img")
@@ -93,7 +95,7 @@ function expenseAdd(newExpense) {
         expenseList.append(expenseItem)
 
         // Atualiza os totais.
-        updateTotal()
+        updateTotals()
 
     } catch (error) {
         alert("Não foi possível atualizar a lista de despesas.")
@@ -102,14 +104,27 @@ function expenseAdd(newExpense) {
 }
 
 // Atualiza o valor total das despesas.
-function updateTotal() {
+function updateTotals() {
     try {
-        // Recupera todos os itens (li) da lista (ul)
         const items = expenseList.children
 
+        expensesQuantity.textContent =
+            `${items.length} ${items.length > 1 ? "despesas" : "despesa"}`
 
-        // Atualiza a quantidade de itens da lista.
-        expenseQuantity.textContent = `${items.length} ${items.length > 1 ? "despesas" : "despesa"}`
+        let total = 0
+
+        for (let item of items) {
+            const value = item.querySelector(".expense-amount").textContent
+
+            const numberValue = Number(
+                value.replace(/\D/g, "")
+            ) / 100
+
+            total += numberValue
+        }
+
+        expensesTotal.textContent = formatCurrencyBRL(total)
+
     } catch (error) {
         console.log(error)
         alert("Não foi possível atualizar os totais.")
