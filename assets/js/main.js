@@ -5,6 +5,7 @@ const category = document.getElementById("category")
 
 // Seleciona os elementos da lista.
 const expenseList = document.querySelector("ul")
+const expenseQuantity = document.querySelector("aside header p span")
 
 // Captura o evento de input para formatação de valor.
 amount.oninput = () => {
@@ -47,6 +48,7 @@ form.onsubmit = (event) => {
     expenseAdd(newExpense)
 }
 
+// Adiciona um novo item na lista.
 function expenseAdd(newExpense) {
     try {
         // Cria o elemento de li (ítem) para adicionar o ítem na lista (ul).
@@ -73,14 +75,43 @@ function expenseAdd(newExpense) {
         // Adiciona nome e categoria na div das informações da despesa.
         expenseInfo.append(expenseName, expenseCategory)
 
+        // Cria o valor da despesa.
+        const expenseAmount = document.createElement("span")
+        expenseAmount.classList.add("expense-amount")
+        expenseAmount.innerHTML = `<small>R$</small>${newExpense.amount.toUpperCase().replace("R$", "")}`
+
+        // Cria um icone de remover.
+        const removeIcon = document.createElement("img")
+        removeIcon.classList.add("remove-icon")
+        removeIcon.setAttribute("src", "assets/images/remove.svg")
+        removeIcon.setAttribute("alt", "remover")
+
         // Adiciona as informações do item.
-        expenseItem.append(expenseIcon, expenseInfo)
+        expenseItem.append(expenseIcon, expenseInfo, expenseAmount, removeIcon)
 
         // Adiciona o item na lista.
         expenseList.append(expenseItem)
 
+        // Atualiza os totais.
+        updateTotal()
+
     } catch (error) {
         alert("Não foi possível atualizar a lista de despesas.")
         console.log(error)
+    }
+}
+
+// Atualiza o valor total das despesas.
+function updateTotal() {
+    try {
+        // Recupera todos os itens (li) da lista (ul)
+        const items = expenseList.children
+
+
+        // Atualiza a quantidade de itens da lista.
+        expenseQuantity.textContent = `${items.length} ${items.length > 1 ? "despesas" : "despesa"}`
+    } catch (error) {
+        console.log(error)
+        alert("Não foi possível atualizar os totais.")
     }
 }
